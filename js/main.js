@@ -1,6 +1,5 @@
 //  точка входа
-
-import './util.js';
 import {arrayPublications} from './data.js';
+import {createElements} from '.miniatures.js';
 
-arrayPublications();
+createElements(arrayPublications);
