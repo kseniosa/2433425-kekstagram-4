@@ -62,10 +62,10 @@ const createPublication = () => ({
   url: (`photos/${getRandomInteger(1, photosCount)}.jpg`),
   description: DESCRIPTIONS[getRandomInteger(0, DESCRIPTIONS.length - 1)],
   likes: getRandomInteger(likesMinCount, likesMaxCount),
-  comments: Array.from({length: getRandomInteger(0,commentCount)}, createComments) // массив комментариев
+  comments: Array.from({length: getRandomInteger(0,commentCount)},  (_, index) => createComments(index + 1)) // массив комментариев
 });
 
 // массив описаний фотографий
-const arrayPublications  = () =>   Array.from({length: photosCount}, (_, index) => createPublication(index + 1));
+const arrayPublications = Array.from({length: photosCount}, createPublication);
 
 export {arrayPublications};
