@@ -48,7 +48,7 @@ const generateCommentId = createRandomId(1, commentCount);
 //генерация одного комментария
 const createComments = () => ({
   id: generateCommentId(),
-  avatar: ('img/avatar-', getRandomInteger(1, avatarsCount), '.svg'),
+  avatar: (`img/avatar-${getRandomInteger(1, avatarsCount)}.svg`),
   message: MESSAGES[getRandomInteger(0, MESSAGES.length - 1)],
   name: NAMES[getRandomInteger(0, NAMES.length - 1)]
 });
@@ -59,7 +59,7 @@ const generateId = createRandomId(1, photosCount);
 //генерация одного объекта с описанием
 const createPublication = () => ({
   id: generateId(),
-  url: ('photos/', getRandomInteger(1, photosCount), '.jpg'),
+  url: (`photos/${getRandomInteger(1, photosCount)}.jpg`),
   description: DESCRIPTIONS[getRandomInteger(0, DESCRIPTIONS.length - 1)],
   likes: getRandomInteger(likesMinCount, likesMaxCount),
   comments: Array.from({length: getRandomInteger(0,commentCount)}, createComments) // массив комментариев
