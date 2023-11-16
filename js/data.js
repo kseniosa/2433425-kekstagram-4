@@ -1,5 +1,5 @@
 // модуль генерации данных
-import {getRandomInteger, createRandomId} from './util';
+import {getRandomInteger, createRandomId} from './util.js';
 
 const commentCount = 30;
 const photosCount = 25;
@@ -13,7 +13,7 @@ const DESCRIPTIONS = [
   'Всем добра и позитива <3',
   'Ставь лайк, если любишь маму...',
   'Кто поставит лайк, тот найдет айфон под подушкой!',
-  'Любите эту жить! Кайфуйте!!!',
+  'Любите эту жизнь! Кайфуйте!!!',
   'Как придумать интересную подпись??',
   'Мне просто надо пережить эту неделю...',
   'Я - лучше всех!',

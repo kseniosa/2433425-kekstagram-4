@@ -1,5 +1,3 @@
-import {arrayPublications} from './data.js';
-
 const pictireTemplate = document.querySelector('#picture').content.querySelector('.picture');
 const pictures = document.querySelector('.pictures');
 
@@ -10,19 +8,20 @@ const createElement = (picture) => {
   newMiniature.querySelector('.picture__img').src = url;
   newMiniature.querySelector('.picture__img').alt = description;
   newMiniature.querySelector('.picture__likes').innerHTML = likes;
-  newMiniature.querySelector('.picture__comments').innerHTML = comments;
+  newMiniature.querySelector('.picture__comments').innerHTML = comments.length;
 
   return newMiniature;
 };
 
-const createElements = arrayPublications();
 const pictureListFragment = document.createDocumentFragment();
 
-createElements.forEach(() => {
-  pictureListFragment.appendChild(createElement());
-});
+const createElements = (photos) => {
+  photos.forEach((photo) => {
+    pictureListFragment.appendChild(createElement(photo));
+  });
 
-pictures.appendChild(pictureListFragment);
+  pictures.appendChild(pictureListFragment);
+};
 
 export {createElements};
 
