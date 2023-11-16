@@ -66,6 +66,6 @@ const createPublication = () => ({
 });
 
 // массив описаний фотографий
-const arrayPublications  = () =>  Array.from({length: photosCount}, createPublication);
+const arrayPublications  = () =>   Array.from({length: photosCount}, (_, index) => createPublication(index + 1));
 
 export {arrayPublications};

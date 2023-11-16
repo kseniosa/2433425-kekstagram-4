@@ -13,9 +13,8 @@ const createElement = (picture) => {
   return newMiniature;
 };
 
-const pictureListFragment = document.createDocumentFragment();
-
 const createElements = (photos) => {
+  const pictureListFragment = document.createDocumentFragment();
   photos.forEach((photo) => {
     pictureListFragment.appendChild(createElement(photo));
   });
