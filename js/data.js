@@ -1,5 +1,11 @@
 // модуль генерации данных
-import {getRandomInteger, createRandomId} from './util';
+import {getRandomInteger, createRandomId} from './util.js';
+
+const commentCount = 30;
+const photosCount = 25;
+const avatarsCount = 6;
+const likesMinCount = 15;
+const likesMaxCount = 200;
 
 // массив подписей к фото
 const DESCRIPTIONS = [
@@ -7,7 +13,11 @@ const DESCRIPTIONS = [
   'Всем добра и позитива <3',
   'Ставь лайк, если любишь маму...',
   'Кто поставит лайк, тот найдет айфон под подушкой!',
-  'Любите эту жить! Кайфуйте!!!'
+  'Любите эту жизнь! Кайфуйте!!!',
+  'Как придумать интересную подпись??',
+  'Мне просто надо пережить эту неделю...',
+  'Я - лучше всех!',
+  'А вы знаете, что скоро ретроградный меркурий?...'
 ];
 
 // массив имен комментаторов
@@ -33,29 +43,29 @@ const MESSAGES = [
 ];
 
 // генерация индекса комментария
-const generateCommentId = createRandomId(1, 30);
+const generateCommentId = createRandomId(1, commentCount);
 
 //генерация одного комментария
 const createComments = () => ({
   id: generateCommentId(),
-  avatar: ('img/avatar-', getRandomInteger(1, 6), '.svg'),
+  avatar: (`img/avatar-${getRandomInteger(1, avatarsCount)}.svg`),
   message: MESSAGES[getRandomInteger(0, MESSAGES.length - 1)],
   name: NAMES[getRandomInteger(0, NAMES.length - 1)]
 });
 
 // генерация индекса фото
-const generateId = createRandomId(1, 25);
+const generateId = createRandomId(1, photosCount);
 
 //генерация одного объекта с описанием
 const createPublication = () => ({
   id: generateId(),
-  url: ('photos/', getRandomInteger(1, 25), '.jpg'),
+  url: (`photos/${getRandomInteger(1, photosCount)}.jpg`),
   description: DESCRIPTIONS[getRandomInteger(0, DESCRIPTIONS.length - 1)],
-  likes: getRandomInteger(15, 200),
-  comments: Array.from({length: getRandomInteger(0,30)}, createComments) // массив комментариев
+  likes: getRandomInteger(likesMinCount, likesMaxCount),
+  comments: Array.from({length: getRandomInteger(0,commentCount)},  (_, index) => createComments(index + 1)) // массив комментариев
 });
 
 // массив описаний фотографий
-const arrayPublications  = () =>  Array.from({length: 25}, createPublication);
+const arrayPublications = Array.from({length: photosCount}, createPublication);
 
 export {arrayPublications};
