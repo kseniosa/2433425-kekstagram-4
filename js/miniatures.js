@@ -1,3 +1,5 @@
+import {openBigPicture} from './big-picture.js';
+
 const pictireTemplate = document.querySelector('#picture').content.querySelector('.picture');
 const pictures = document.querySelector('.pictures');
 
@@ -9,6 +11,13 @@ const createElement = (picture) => {
   newMiniature.querySelector('.picture__img').alt = description;
   newMiniature.querySelector('.picture__likes').innerHTML = likes;
   newMiniature.querySelector('.picture__comments').innerHTML = comments.length;
+
+  const onNewMiniatureClick = (evt) => {
+    evt.preventDefault();
+    openBigPicture(picture);
+  };
+
+  newMiniature.addEventListener('click', onNewMiniatureClick);
 
   return newMiniature;
 };
@@ -23,4 +32,3 @@ const createElements = (photos) => {
 };
 
 export {createElements};
-

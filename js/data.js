@@ -36,6 +36,10 @@ const NAMES = [
 const MESSAGES = [
   'Всё отлично!',
   'В целом всё неплохо. Но не всё.',
+  'Ну и кринж ты постишь...',
+  'Вау!!!',
+  'Почему столько негатива в комментариях?',
+  'Это я, твой единственный подписчик...',
   'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.',
   'Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.',
   'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.',
@@ -55,14 +59,15 @@ const createComments = () => ({
 
 // генерация индекса фото
 const generateId = createRandomId(1, photosCount);
+const generatePhotoId = createRandomId(1, photosCount);
 
 //генерация одного объекта с описанием
 const createPublication = () => ({
   id: generateId(),
-  url: (`photos/${getRandomInteger(1, photosCount)}.jpg`),
+  url: (`photos/${generatePhotoId()}.jpg`),
   description: DESCRIPTIONS[getRandomInteger(0, DESCRIPTIONS.length - 1)],
   likes: getRandomInteger(likesMinCount, likesMaxCount),
-  comments: Array.from({length: getRandomInteger(0,commentCount)},  (_, index) => createComments(index + 1)) // массив комментариев
+  comments: Array.from({length: getRandomInteger(0, commentCount)}, createComments) // массив комментариев
 });
 
 // массив описаний фотографий
