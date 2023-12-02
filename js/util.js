@@ -24,6 +24,7 @@ const createRandomId = (min, max) => {
   };
 };
 
+// проверка, является ли нажатая кнопка эскейпом
 const isEscapeKey = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
 
 export {getRandomInteger, createRandomId, isEscapeKey};
