@@ -39,13 +39,13 @@ const createComments = () => {
   socialComments.innerHTML = '';
 
   // сравниваем длину массива и отображаемое число комментариев
-  shownCommentsCount = (shownCommentsCount > commentsArray.lenght) ? commentsArray.lenght : shownCommentsCount;
+  shownCommentsCount = (shownCommentsCount > commentsArray.length) ? commentsArray.length : shownCommentsCount;
 
   // копируем в массив отображаемых комментариев кол-во комментариев, которые надо отобразить
   const shownComments = commentsArray.slice(0, shownCommentsCount);
 
   // скрытие/отображение кнопки "загрузить еще"
-  if (commentsArray.lenght <= COMMENTS_STEP || shownCommentsCount >= commentsArray.lenght) {
+  if (commentsArray.length <= COMMENTS_STEP || shownCommentsCount >= commentsArray.length) {
     commentsLoader.classList.add('hidden');
   } else {
     commentsLoader.classList.remove('hidden');
@@ -109,7 +109,7 @@ const openBigPicture = (picture) => {
   bigPictureImage.src = url;
   bigPictureLikes.textContent = likes;
   bigPictureDescription.textContent = description;
-  commentsCount.textContent = comments.lenght;
+  commentsCount.textContent = comments.length;
   // createComments(comments);
 
   commentsArray = comments.slice(); // копируем все комментарии в массив
