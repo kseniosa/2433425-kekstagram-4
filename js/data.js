@@ -70,7 +70,7 @@ const createPublication = () => ({
   comments: Array.from({length: getRandomInteger(0, commentCount)}, createComments) // массив комментариев
 });
 
-// массив описаний фотографий
+// массив публикаций (объект с описанием, лайками и т.д.)
 const arrayPublications = Array.from({length: photosCount}, createPublication);
 
 export {arrayPublications};
