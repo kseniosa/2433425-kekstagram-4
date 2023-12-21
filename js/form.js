@@ -1,115 +1,221 @@
 import {isEscapeKey} from './util.js';
-
-// const MAX_LENGTH = 20; // максимальная длина хэштега
-// const MAX_COUNT = 5; // максимальне количество хэштегов
+import './nouislider.js';
 
 const uploadForm = document.querySelector('.img-upload__form');
-const uploadFile = document.querySelector('.img-upload__input'); // выбор файла для загрузки
+const uploadFile = document.querySelector('.img-upload__input');
 const overlay = document.querySelector('.img-upload__overlay');
-const uploadCancel = document.querySelector('.img-upload__cancel'); // крестик
+const uploadCancel = document.querySelector('.img-upload__cancel');
 const hashtag = document.querySelector('.text__hashtags');
-// const description = document.querySelector('.text__description');
 const uploadButton = document.querySelector('.img-upload__submit');
+const smallerSizeButton = document.querySelector('.scale__control--smaller');
+const biggerSizeButton = document.querySelector('.scale__control--bigger');
+const sizeLabel = document.querySelector('.scale__control--value');
+const imagePreview = document.querySelector('.img-upload__preview img');
+const slider = document.querySelector('.effect-level__slider');
+const filtersSelect = document.querySelectorAll('.effects__item');
+const sliderUpload = document.querySelector('.img-upload__effect-level');
 
-let errorText = ''; // текст ошибки
+let currentFilter = document.querySelector('.effects_radio');
+
+let errorText = '';
 
 const findDuplicates = (arr) => arr.filter((item, index) => arr.indexOf(item) !== index);
 
-const error = () => errorText; // текст ошибки но по-другому
+const error = () => errorText;
 
 const pristine = new Pristine(uploadForm, {
-  classTo: 'img-upload__field-wrapper', // родительский элемент, куда отправится класс ошибки/успеха
+  classTo: 'img-upload__field-wrapper',
   errorClass: 'invalid',
   succesClass: 'valid',
-  errorTextParent: 'img-upload__field-wrapper', // класс родителя, к которому добавляется текстовый элемент ошибки
-  errorTextTag: 'div', // тип элемента, который нужно создать для текста ошибки
-  errorTextClass: 'img-upload__error' // класс текстового элемента ошибки
+  errorTextParent: 'img-upload__field-wrapper',
+  errorTextTag: 'div',
+  errorTextClass: 'img-upload__error'
 });
 
+const filters = {
+  none: () => {
+    sliderUpload.classList.add('visually-hidden');
+    return 'none';
+  },
 
-// закрытие формы
-const closeForm = () => {
-  overlay.classList.add('hidden');
-  document.body.classList.remove('modal-open');
+  sepia: () => {
+    sliderUpload.classList.remove('visually-hidden');
+    return `sepia(${parseInt(slider.value, 10) * 0.01})`;
+  },
 
-  uploadCancel.reset(); // сброс значения поля выбора
-};
+  chrome: () => {
+    sliderUpload.classList.remove('visually-hidden');
+    return `grayscale(${parseInt(slider.value, 10) * 0.01})`;
+  },
 
-const onCloseFormEscapeKeydown = (evt) => {
-  // закрытие по эскейпу если хэштег и описание НЕ активные поля
-  if (isEscapeKey(evt) && !evt.target.classList.contains('text__hashtags') &&
-  !evt.target.classList.contains('text__description')) {
-    evt.preventDefault();
+  marvin: () => {
+    sliderUpload.classList.remove('visually-hidden');
+    return `invert(${Math.floor(slider.value)}%)`;
+  },
 
-    closeForm();
-    document.removeEventListener('keydown', onCloseFormEscapeKeydown); // удаляем обработчик
+  phobos: () => {
+    sliderUpload.classList.remove('visually-hidden');
+    return `blur(${parseInt(slider.value, 10) * 0.01 * 3}px)`;
+  },
+
+  heat: () => {
+    sliderUpload.classList.remove('visually-hidden');
+    return `brightness(${parseInt(slider.value, 10) * 0.01 * 3})`;
   }
 };
 
-// зактытие формы при клике на крестик
-const onUploadCancelClick = () => {
-  closeForm();
-};
-
-// загрузка картинки
-const onUploadFileChange = () => {
-  overlay.classList.remove('hidden');
-  document.body.classList.add('modal-open');
-
-  document.addEventListener('keydown', onCloseFormEscapeKeydown); // закрытие по эскейпу
-};
 
 const hashtagHandler = (value) => {
   errorText = '';
   const re = /^#[A-Za-zА-Яа-яЁё0-9]{1,19}$/;
-  const hashtagText = value.toLowerCase().trim(); // текст хэштегов без пробелов и больших букв
-  const hashtagTextArray = hashtagText.split(/\s+/); // сплит по всем пробелам между хэштегами
+  const hashtagText = value.toLowerCase().trim();
+  const hashtagTextArray = hashtagText.split(/\s+/);
 
-  uploadButton.disabled = false; // делаем кнопку активной по умолчанию
+  uploadButton.disabled = false;
 
   if (hashtagTextArray.length === 0 || hashtagTextArray[0] === '') {
     return true;
-  } // если хэштегов нет, то разрешаем загрузку
-
-  const duplicates = findDuplicates(hashtagTextArray); // ищем дублированные хэштеги
-
-  if (duplicates.length > 0) { // если есть дублированные хэштеги
-    errorText = 'Нельзя дублировать хэштеги!'; // задаем сообщение об ошибке
-    uploadButton.disabled = true; // отключаем кнопку
-    return false; // возвращаем ошибку при валидации
   }
 
-  if (hashtagTextArray.length > 5) { // если хэштегов больше 5 штук
+  const duplicates = findDuplicates(hashtagTextArray);
+
+  if (duplicates.length > 0) {
+    errorText = 'Нельзя дублировать хэштеги!';
+    uploadButton.disabled = true;
+    return false;
+  }
+
+  if (hashtagTextArray.length > 5) {
     errorText = 'Нельзя указать больше 5 хэштегов!';
     uploadButton.disabled = true;
     return false;
   }
 
-  hashtagTextArray.forEach((element) => { // проверяем каждый хэштег в массиве
-    if (!re.test(element)) { errorText = 'Хэштег может состоять только из букв и чисел!'; }// проверяем хэштег регулярным выражением
-    if (element.length >= 20) { errorText = 'Максимальная длина хэштега - 20 символов!'; } // проверяем длину хэштега
-    if (element[0] === '#' && element.length === 1) { errorText = 'Хэштег не может состоять только из #!'; } // проверяем наличие текста в хэштеге
-    if (element[0] !== '#') { errorText = 'Каждый хэштег должен начинаться с #!'; } // проверяем решетку в начале
+  hashtagTextArray.forEach((element) => {
+    if (!re.test(element)) { errorText = 'Хэштег может состоять только из букв и чисел!'; }
+    if (element.length >= 20) { errorText = 'Максимальная длина хэштега - 20 символов!'; }
+    if (element[0] === '#' && element.length === 1) { errorText = 'Хэштег не может состоять только из #!'; }
+    if (element[0] !== '#') { errorText = 'Каждый хэштег должен начинаться с #!'; }
   });
 
-  if (errorText !== ''){ // если была хоть одна ошибка
+  if (errorText !== ''){
     uploadButton.disabled = true;
     return false;
   }
 
-  uploadButton.disabled = false; // если ошибок не было, включаем кнопку
-  return true; // возвращаем что всё хорошо
+  uploadButton.disabled = false;
+  return true;
 
 };
-
-pristine.addValidator(hashtag, hashtagHandler, error, 2, false); // добравляем валидатор на хэштег
 
 const onHashtagInput = () => {
 
 }; // дописать!!! ввод текста в поле хэштега
 
+const onSizeButtonClick = (event) => {
+  let newValue = parseInt(sizeLabel.value, 10);
+  if (event.target === smallerSizeButton){
+    newValue = newValue - 25 >= 25 ? newValue - 25 : 25;
+  }
+  else{
+    newValue = newValue + 25 <= 100 ? newValue + 25 : 100;
+  }
+
+  imagePreview.style.transform = `scale(${newValue / 100})`;
+  sizeLabel.value = `${newValue}%`;
+};
+
+const onSliderUpdate = () => {
+  slider.value = slider.noUiSlider.get();
+  if (currentFilter) {
+    imagePreview.style.filter = filters[currentFilter]();
+  }
+  else {
+    imagePreview.style.filter = filters['none']();
+  }
+};
+
+const onFilterChange = (event) => {
+  currentFilter = event.currentTarget.querySelector('.effects__radio').value;
+  imagePreview.style.filter = filters[currentFilter]();
+  slider.noUiSlider.set(100);
+  slider.value = 100;
+};
+
+const openForm = () => {
+  filtersSelect.forEach((filter) => {
+    filter.addEventListener('change', onFilterChange);
+  });
+
+  sizeLabel.value = '100%';
+  if (!slider.noUiSlider){
+    noUiSlider.create(slider, {
+      range: {
+        min: 0,
+        max: 100,
+      },
+      start: 100,
+      step: 10,
+      connect: 'lower'
+    });}
+
+  hashtag.addEventListener('input', onHashtagInput); // обрабочик ввода текста в поле хэштега
+  smallerSizeButton.addEventListener('click', onSizeButtonClick); // обработчик клика на кнопки размера
+  biggerSizeButton.addEventListener('click', onSizeButtonClick);
+  slider.noUiSlider.on('update', onSliderUpdate);
+
+};
+
+const closeForm = () => {
+  overlay.classList.add('hidden');
+  document.body.classList.remove('modal-open');
+  currentFilter = document.querySelector('.effects_radio');
+
+  uploadForm.reset();
+  pristine.reset();
+  sizeLabel.value = '100%';
+  imagePreview.style.transform = 'scale(100%)';
+  uploadButton.disabled = false;
+
+  //uploadCancel.removeEventListener('click', onUploadCancelClick);
+  hashtag.removeEventListener('input', onHashtagInput);
+  smallerSizeButton.removeEventListener('click', onSizeButtonClick);
+  biggerSizeButton.removeEventListener('click', onSizeButtonClick);
+
+  filtersSelect.forEach((filter) => {
+    filter.removeEventListener('change', onFilterChange);
+  });
+
+  slider.noUiSlider.off('change', onSliderUpdate);
+  imagePreview.style.filter = filters['none']();
+};
+
+const onCloseFormEscapeKeydown = (evt) => {
+  if (isEscapeKey(evt) && !evt.target.classList.contains('text__hashtags') &&
+  !evt.target.classList.contains('text__description')) {
+    evt.preventDefault();
+
+    closeForm();
+    document.removeEventListener('keydown', onCloseFormEscapeKeydown);
+  }
+};
+
+const onUploadFileChange = () => {
+  overlay.classList.remove('hidden');
+  document.body.classList.add('modal-open');
+  openForm();
+
+  document.addEventListener('keydown', onCloseFormEscapeKeydown);
+};
+
+
+const onUploadCancelClick = () => {
+  closeForm();
+};
+
+uploadFile.addEventListener('change', onUploadFileChange); // обрабочик изменения состояния файла
+pristine.addValidator(hashtag, hashtagHandler, error, 2, false); // добравляем валидатор на хэштег
 uploadFile.addEventListener('change', onUploadFileChange); // обрабочик изменения состояния файла
 uploadCancel.addEventListener('click', onUploadCancelClick); // обработчик клика на крестик
-hashtag.addEventListener('input', onHashtagInput); // обрабочик ввода текста в поле хэштега
 
-export { closeForm };
+export { openForm, closeForm };
