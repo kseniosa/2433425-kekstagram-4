@@ -1,5 +1,17 @@
 // модуль с вспомогательными функциями
 
+
+const debounce = (callback, timeoutDelay = 500) => {
+  let timeoutId;
+
+  return (...rest) => {
+    clearTimeout(timeoutId);
+
+    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+  };
+};
+
+
 const getRandomInteger = (a, b) => {
   const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));
@@ -27,4 +39,4 @@ const createRandomId = (min, max) => {
 // проверка, является ли нажатая кнопка эскейпом
 const isEscapeKey = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
 
-export {getRandomInteger, createRandomId, isEscapeKey};
+export {getRandomInteger, createRandomId, isEscapeKey, debounce};
