@@ -35,4 +35,8 @@ const createElements = (photos) => {
   pictures.appendChild(pictureListFragment);
 };
 
-export {createElements};
+const removeElements = () => {
+  document.querySelectorAll('.picture').forEach((picture) => picture.remove());
+};
+
+export {createElements, removeElements};
