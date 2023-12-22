@@ -1,4 +1,4 @@
-import { isEscapeKey } from './util.js';
+import { FILE_TYPES, isEscapeKey } from './util.js';
 import { showMessage } from './messages.js';
 import { sendPicture } from './api-work.js';
 import './nouislider.js';
@@ -208,10 +208,21 @@ const onCloseFormEscapeKeydown = (evt) => {
   }
 };
 
+const changePreview = () => {
+  const file = uploadFile.files[0];
+  const fileName = file.name.toLowerCase();
+
+  const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
+  if (matches) {
+    imagePreview.src = URL.createObjectURL(file);
+  }
+};
+
 const onUploadFileChange = () => {
   overlay.classList.remove('hidden');
   document.body.classList.add('modal-open');
   openForm();
+  changePreview();
 
   document.addEventListener('keydown', onCloseFormEscapeKeydown);
 };
