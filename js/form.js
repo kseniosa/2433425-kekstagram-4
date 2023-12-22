@@ -1,4 +1,6 @@
-import {isEscapeKey} from './util.js';
+import { isEscapeKey } from './util.js';
+import { showMessage } from './messages.js';
+import { sendPicture } from './api-work.js';
 import './nouislider.js';
 
 const uploadForm = document.querySelector('.img-upload__form');
@@ -14,6 +16,9 @@ const imagePreview = document.querySelector('.img-upload__preview img');
 const slider = document.querySelector('.effect-level__slider');
 const filtersSelect = document.querySelectorAll('.effects__item');
 const sliderUpload = document.querySelector('.img-upload__effect-level');
+const effectLevel = document.querySelector('.effect-level__value');
+const successTemplate = document.querySelector('#success').content.querySelector('section');
+const errorTemplate = document.querySelector('#error').content.querySelector('section');
 
 let currentFilter = document.querySelector('.effects_radio');
 
@@ -127,19 +132,13 @@ const onSizeButtonClick = (event) => {
 
 const onSliderUpdate = () => {
   slider.value = slider.noUiSlider.get();
+  effectLevel.value = slider.value;
   if (currentFilter) {
     imagePreview.style.filter = filters[currentFilter]();
   }
   else {
     imagePreview.style.filter = filters['none']();
   }
-};
-
-const onFilterChange = (event) => {
-  currentFilter = event.currentTarget.querySelector('.effects__radio').value;
-  imagePreview.style.filter = filters[currentFilter]();
-  slider.noUiSlider.set(100);
-  slider.value = 100;
 };
 
 const openForm = () => {
@@ -163,7 +162,15 @@ const openForm = () => {
   smallerSizeButton.addEventListener('click', onSizeButtonClick); // обработчик клика на кнопки размера
   biggerSizeButton.addEventListener('click', onSizeButtonClick);
   slider.noUiSlider.on('update', onSliderUpdate);
+  uploadForm.addEventListener('submit', onFormSubmit);
 
+};
+
+const onFilterChange = (event) => {
+  currentFilter = event.currentTarget.querySelector('.effects__radio').value;
+  imagePreview.style.filter = filters[currentFilter]();
+  slider.noUiSlider.set(100);
+  slider.value = 100;
 };
 
 const closeForm = () => {
@@ -178,6 +185,7 @@ const closeForm = () => {
   uploadButton.disabled = false;
 
   //uploadCancel.removeEventListener('click', onUploadCancelClick);
+  uploadForm.removeEventListener('submit', onFormSubmit);
   hashtag.removeEventListener('input', onHashtagInput);
   smallerSizeButton.removeEventListener('click', onSizeButtonClick);
   biggerSizeButton.removeEventListener('click', onSizeButtonClick);
@@ -211,6 +219,24 @@ const onUploadFileChange = () => {
 
 const onUploadCancelClick = () => {
   closeForm();
+};
+
+const onSuccess = () => {
+  closeForm();
+  showMessage(successTemplate);
+  uploadButton.disabled = false;
+};
+
+const onFail = () => {
+  showMessage(errorTemplate);
+  uploadButton.disabled = false;
+};
+
+const onFormSubmit = (event) => {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  sendPicture(onSuccess, onFail, 'POST', formData);
+  uploadButton.disabled = true;
 };
 
 uploadFile.addEventListener('change', onUploadFileChange); // обрабочик изменения состояния файла
