@@ -2,7 +2,7 @@ import { isEscapeKey } from './util.js';
 
 const body = document.body;
 
-const showErrorModal = (errorText) => {
+const showErrorModal = () => {
   const modal = document.createElement('div');
   modal.id = 'errorModal';
   modal.className = 'modal';
@@ -26,7 +26,7 @@ const showErrorModal = (errorText) => {
   modalContent.appendChild(errorMessage);
   modal.appendChild(modalContent);
   document.body.appendChild(modal);
-  errorMessage.textContent = errorText;
+  errorMessage.textContent = 'проблема доступа к серверу';
   modal.style.display = 'block';
 };
 
@@ -53,10 +53,10 @@ const showMessage = (message) => {
   body.addEventListener('keydown', onMessageKeyDown);
 };
 
-const closeMessage = () => {
+function closeMessage () {
   body.removeEventListener('click', onMessageClick);
   document.removeEventListener('keydown', onMessageKeyDown);
   body.removeChild(body.lastChild);
-};
+}
 
 export {showErrorModal, showMessage, closeMessage};

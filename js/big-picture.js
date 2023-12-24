@@ -110,7 +110,6 @@ const openBigPicture = (picture) => {
   bigPictureLikes.textContent = likes;
   bigPictureDescription.textContent = description;
   commentsCount.textContent = comments.length;
-  // createComments(comments);
 
   commentsArray = comments.slice(); // копируем все комментарии в массив
   createComments();

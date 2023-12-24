@@ -3,6 +3,15 @@ import { showMessage } from './messages.js';
 import { sendPicture } from './api-work.js';
 import './nouislider.js';
 
+const MAX_HASHTAG_COUNT = 5;
+const MAX_HASHTAG_LENGTH = 20;
+const SCALE_MIN = 25;
+const SCALE_MAX = 100;
+const SCALE_STEP = 25;
+const SLIDER_MIN = 0;
+const SLIDER_MAX = 100;
+const SLIDER_STEP = 10;
+
 const uploadForm = document.querySelector('.img-upload__form');
 const uploadFile = document.querySelector('.img-upload__input');
 const overlay = document.querySelector('.img-upload__overlay');
@@ -90,7 +99,7 @@ const hashtagHandler = (value) => {
     return false;
   }
 
-  if (hashtagTextArray.length > 5) {
+  if (hashtagTextArray.length > MAX_HASHTAG_COUNT) {
     errorText = 'Нельзя указать больше 5 хэштегов!';
     uploadButton.disabled = true;
     return false;
@@ -98,7 +107,7 @@ const hashtagHandler = (value) => {
 
   hashtagTextArray.forEach((element) => {
     if (!re.test(element)) { errorText = 'Хэштег может состоять только из букв и чисел!'; }
-    if (element.length >= 20) { errorText = 'Максимальная длина хэштега - 20 символов!'; }
+    if (element.length >= MAX_HASHTAG_LENGTH) { errorText = 'Максимальная длина хэштега - 20 символов!'; }
     if (element[0] === '#' && element.length === 1) { errorText = 'Хэштег не может состоять только из #!'; }
     if (element[0] !== '#') { errorText = 'Каждый хэштег должен начинаться с #!'; }
   });
@@ -113,17 +122,15 @@ const hashtagHandler = (value) => {
 
 };
 
-const onHashtagInput = () => {
-
-}; // дописать!!! ввод текста в поле хэштега
+const onHashtagInput = () => { };
 
 const onSizeButtonClick = (event) => {
   let newValue = parseInt(sizeLabel.value, 10);
   if (event.target === smallerSizeButton){
-    newValue = newValue - 25 >= 25 ? newValue - 25 : 25;
+    newValue = newValue - SCALE_STEP >= SCALE_MIN ? newValue - SCALE_STEP : SCALE_MIN;
   }
   else{
-    newValue = newValue + 25 <= 100 ? newValue + 25 : 100;
+    newValue = newValue + SCALE_STEP <= SCALE_MAX ? newValue + SCALE_STEP : SCALE_MAX;
   }
 
   imagePreview.style.transform = `scale(${newValue / 100})`;
@@ -150,11 +157,11 @@ const openForm = () => {
   if (!slider.noUiSlider){
     noUiSlider.create(slider, {
       range: {
-        min: 0,
-        max: 100,
+        min: SLIDER_MIN,
+        max: SLIDER_MAX,
       },
-      start: 100,
-      step: 10,
+      start: SLIDER_MAX,
+      step: SLIDER_STEP,
       connect: 'lower'
     });}
 
@@ -166,12 +173,12 @@ const openForm = () => {
 
 };
 
-const onFilterChange = (event) => {
+function onFilterChange (event) {
   currentFilter = event.currentTarget.querySelector('.effects__radio').value;
   imagePreview.style.filter = filters[currentFilter]();
-  slider.noUiSlider.set(100);
-  slider.value = 100;
-};
+  slider.noUiSlider.set(SLIDER_MAX);
+  slider.value = SLIDER_MAX;
+}
 
 const closeForm = () => {
   overlay.classList.add('hidden');
@@ -184,7 +191,6 @@ const closeForm = () => {
   imagePreview.style.transform = 'scale(100%)';
   uploadButton.disabled = false;
 
-  //uploadCancel.removeEventListener('click', onUploadCancelClick);
   uploadForm.removeEventListener('submit', onFormSubmit);
   hashtag.removeEventListener('input', onHashtagInput);
   smallerSizeButton.removeEventListener('click', onSizeButtonClick);
@@ -243,12 +249,12 @@ const onFail = () => {
   uploadButton.disabled = false;
 };
 
-const onFormSubmit = (event) => {
+function onFormSubmit (event) {
   event.preventDefault();
   const formData = new FormData(event.target);
   sendPicture(onSuccess, onFail, 'POST', formData);
   uploadButton.disabled = true;
-};
+}
 
 uploadFile.addEventListener('change', onUploadFileChange); // обрабочик изменения состояния файла
 pristine.addValidator(hashtag, hashtagHandler, error, 2, false); // добравляем валидатор на хэштег
